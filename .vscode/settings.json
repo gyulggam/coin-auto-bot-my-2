@@ -1,0 +1,3 @@
+{
+  "python.analysis.extraPaths": ["./auto-trading/api", "./api", "./transaction_technique", "./config"]
+}
