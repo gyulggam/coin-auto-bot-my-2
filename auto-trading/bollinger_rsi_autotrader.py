@@ -30,7 +30,6 @@ current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)
 root_dir = os.path.dirname(current_dir)
 
-
 # TELEGRAM_BOT_TOKEN_FOR_AIS1 = config.get("TELEGRAM_BOT_TOKEN_FOR_AIS1")   # 내 telegram bot token 입력
 # TELEGRAM_CHAT_ID_FOR_AIS1 = config.get("TELEGRAM_CHAT_ID_FOR_AIS1")       # 내 telegram chat id 입력
 
@@ -89,7 +88,7 @@ if __name__ == "__main__":
   # coin_watcher() # 코인 검색하는 watcher
   
   while True:
-    time.sleep(0.1)
+    time.sleep(3)
     watch_coin_df = get_trading_coin_df()
     
     if len(watch_coin_df) > 0:
@@ -104,17 +103,16 @@ if __name__ == "__main__":
     # print(total_ticker_list)
     # print('Upbit AIS1 코인 개수 :', len(total_ticker_list))
 
-    # for ticker in total_ticker_list:
+    for ticker in watch_coin_df:
     #     # 변수 초기화
-    #     has_position[ticker] = False
-
-    #     get_day_candle_result = get_minute_candle(coin_name=ticker, count=200, minute=5)
+        has_position[ticker] = False
+        # get_day_candle_result = get_minute_candle(coin_name=ticker, count=200, minute=5)
 
     #     telegram_message_list = [str(datetime.datetime.now()), f'@@@@@@@ canlde update {ticker} yesterday_change_rate: {(yesterday_change_rate)} @@@@@@@@@@@@@']
     #     telegram_bot.sendMessage(chat_id=TELEGRAM_CHAT_ID_FOR_AIS1, text=' '.join(telegram_message_list))
 
     #     # 전체 코인 보유 잔량이 있는지 확인
-    #     balance_result = get_balance()
+        # balance_result = get_balance()
     #     #print(balance_result)
     #     for each_asset in balance_result:
     #         each_ticker = each_asset['currency']
