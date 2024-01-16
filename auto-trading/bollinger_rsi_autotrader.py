@@ -2,6 +2,7 @@
 import sys
 import os
 import platform
+import threading
 if platform.system() == 'Windows':
     # Windows 경로
     sys.path.append('D:\\개발\\coin-auto-bot-my\\api')
@@ -80,9 +81,15 @@ def upbit_price_tick_revision(price):
     return price
 
 if __name__ == "__main__":
-  coin_watcher() # 코인 검색하는 watcher
+  # coin_watcher 함수를 실행하는 스레드 생성
+  watcher_thread = threading.Thread(target=coin_watcher)
+
+  # 스레드 시작
+  watcher_thread.start()
+  # coin_watcher() # 코인 검색하는 watcher
   
   while True:
+    time.sleep(0.1)
     watch_coin_df = get_trading_coin_df()
     
     if len(watch_coin_df) > 0:

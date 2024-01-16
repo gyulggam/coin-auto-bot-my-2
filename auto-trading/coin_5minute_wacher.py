@@ -55,19 +55,19 @@ except_coin_list = [                # 거래 제외 코인 리스트
   'MVL'
 ]
 # filter_coin_list = list(filter(lambda x: x not in except_coin_list, all_coin_list)) # 거래 제외 코인 목록 제거한 코인 리스트
-filter_coin_list = ['ARK', 'SC', 'IOST','IQ', 'IOTA', 'ELF', 'THETA', 'ZRX'] # 모든 코인을 돌 수 없어서 내가 선별함
+filter_coin_list = ['ARK', 'ETC', 'IOST','IQ', 'IOTA', 'ELF', 'STRAX', 'BTC'] # 모든 코인을 돌 수 없어서 내가 선별함
 columns = ['market', 'candle_date_time_utc', 'candle_date_time_kst', \
       'opening_price', 'high_price', 'low_price', 'trade_price', \
       'timestamp', 'candle_acc_trade_price', 'candle_acc_trade_volume', 'unit'\
       ]
 today_date_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
 candle_minute = 15 # 분봉 단위
-lower_range_value = 0.01 # 볼린저 밴드 하단 값 깊이 캐치 볼밴 하단보다 1%밑일때 잡는다.
+lower_range_value = 0.03 # 볼린저 밴드 하단 값 깊이 캐치 볼밴 하단보다 1%밑일때 잡는다.
 
 def process_coin(coin):
   time.sleep(0.1)
+  print(f"{coin}-{datetime.now()}: 코인 탐색 시작")
   while True:
-    # print(f"{coin}-{datetime.now()}: 코인 탐색 시작")
     try:
       today_date_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
       candle_info = get_minute_candle(coin_name=coin, count=200, minute=candle_minute) # 5분봉 데이터 200개
@@ -75,7 +75,7 @@ def process_coin(coin):
       df = pd.DataFrame(candle_info, columns=columns)
       df = df.sort_values(by='candle_date_time_kst', ascending=True)
       
-      coin_df = set_bollinger_bands(df, 30, 2) # 데이터 프레임에 볼린저 밴드 값 셋팅
+      coin_df = set_bollinger_bands(df, 20, 2) # 데이터 프레임에 볼린저 밴드 값 셋팅
       coin_df = set_rsi(coin_df, 13) # 데이터 프레임에 rsi 값 셋팅
       
       # today_data = coin_df[coin_df['candle_date_time_kst'].str.startswith(today_date_str)] # 일별 서칭을 할땐 사용함 오늘 날짜의 데이터만 선택
@@ -84,9 +84,10 @@ def process_coin(coin):
       # 볼린저밴드의 하단 3% 보다 가격이 더떨어지고 rsi가 30이하일때 캐치
       # coin_catch = today_data[(today_data["bol_lower_band"] * lower_range_value + today_data["bol_lower_band"] > today_data["trade_price"]) & (today_data['rsi'] < 30)] # 일별에서만 씀
       if (today_data["bol_lower_band"] * lower_range_value + today_data["bol_lower_band"] > today_data["trade_price"]) & (today_data['rsi'] < 30):
-        coin_catch = today_data
+        print(f"{coin}이 검색되었습니다.")
+        coin_catch = today_data.to_frame()
 
-      if not coin_catch.empty and 'market' in coin_catch.columns:
+      if not coin_catch.empty:
         set_trading_coin_df(coin_catch)
 
       
