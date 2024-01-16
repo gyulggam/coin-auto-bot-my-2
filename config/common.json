@@ -1,7 +1,7 @@
 {
-  "access_key": "kn7upxDgHfJTYnhxEAfpN10HeDPGjzcMLOeRRxDN",
-  "secret_key": "xY4yLH4dzSxPIF7dnLyW9VVLWbRuOshxxxcNyFRv",
+  "access_key": "",
+  "secret_key": "",
   "server_url": "https://api.upbit.com",
-  "TELEGRAM_BOT_TOKEN_FOR_AIS1": "6817520313:AAGRCsY5j7-ZXOe3gUu4ELa8Qt7RKqPZiDk",
-  "TELEGRAM_CHAT_ID_FOR_AIS1": 6471017960
+  "TELEGRAM_BOT_TOKEN_FOR_AIS1": "",
+  "TELEGRAM_CHAT_ID_FOR_AIS1": 
 }
