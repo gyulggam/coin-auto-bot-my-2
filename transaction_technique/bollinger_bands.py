@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 def set_bollinger_bands(coin_df_origin, ma = 20, std = 2):
   result = coin_df_origin.copy(deep=True)
   # 계산에 필요한 값 추가
@@ -10,6 +9,7 @@ def set_bollinger_bands(coin_df_origin, ma = 20, std = 2):
   bol_std_multiplier = std # 표준편차에(bol_ma) 곱함
 
   bol_middle_band = result['trade_price'].rolling(window=bol_ma).mean()
+  
   bol_upper_band = bol_middle_band + (result['trade_price'].rolling(window=bol_ma).std() * bol_std_multiplier)
   bol_lower_band = bol_middle_band - (result['trade_price'].rolling(window=bol_ma).std() * bol_std_multiplier)
 

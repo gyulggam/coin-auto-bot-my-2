@@ -1,9 +1,18 @@
 # 승률 100% AIS1 Upbit 봇 구현
-
 import sys
-sys.path.append('D:\\개발\\coin-auto-bot-my\\api')
-sys.path.append('D:\\개발\\coin-auto-bot-my\\config')
-sys.path.append('D:\\개발\\coin-auto-bot-my\\transaction_technique')
+import os
+import platform
+if platform.system() == 'Windows':
+    # Windows 경로
+    sys.path.append('D:\\개발\\coin-auto-bot-my\\api')
+    sys.path.append('D:\\개발\\coin-auto-bot-my\\config')
+    sys.path.append('D:\\개발\\coin-auto-bot-my\\transaction_technique')
+else:
+    # macOS 경로
+    sys.path.append('/Users/kjs/Desktop/Traning/coin-auto-bot-my-2/api')
+    sys.path.append('/Users/kjs/Desktop/Traning/coin-auto-bot-my-2/config')
+    sys.path.append('/Users/kjs/Desktop/Traning/coin-auto-bot-my-2/transaction_technique')
+
 from datetime import datetime
 import uuid
 import requests
@@ -16,6 +25,11 @@ from get_coin_symbol import get_all_symbol
 from global_variable import get_trading_coin_df
 from coin_5minute_wacher import coin_watcher
 
+current_file_path = os.path.abspath(__file__)
+current_dir = os.path.dirname(current_file_path)
+root_dir = os.path.dirname(current_dir)
+
+
 # TELEGRAM_BOT_TOKEN_FOR_AIS1 = config.get("TELEGRAM_BOT_TOKEN_FOR_AIS1")   # 내 telegram bot token 입력
 # TELEGRAM_CHAT_ID_FOR_AIS1 = config.get("TELEGRAM_CHAT_ID_FOR_AIS1")       # 내 telegram chat id 입력
 
@@ -23,6 +37,7 @@ from coin_5minute_wacher import coin_watcher
 all_coin_list = get_all_symbol()   # 업비트 모든 코인 리스트
 except_coin_list = ['DOGE', 'XRP', 'BTG', 'ANKR', 'EOS', 'QTUM', 'XLM', 'FLOW', 'TON', 'USDT', 'TRX', 'NEO', 'ORBS', 'HBAR', 'VET', 'BCH', 'MTL'] # 거래 제외 코인 리스트
 filter_coin_list = list(filter(lambda x: x not in except_coin_list, all_coin_list)) # 거래 제외 코인 목록 제거한 코인 리스트
+file_path =  os.path.join(root_dir, 'catch_coin.csv') # 임시로 검색기에 잡힌 코인을 저장해둘 파일
 # telegram_bot = telegram.Bot(TELEGRAM_BOT_TOKEN_FOR_AIS1) # set telegram bot
 
 # 설정값변수 설정
@@ -71,6 +86,7 @@ if __name__ == "__main__":
     watch_coin_df = get_trading_coin_df()
     
     if len(watch_coin_df) > 0:
+      watch_coin_df.to_csv(file_path, index=False)
       print(f'검색된코인: {watch_coin_df}')
       
     # telegram_message_list = [str(datetime.datetime.now()), '자동 거래 스타트']

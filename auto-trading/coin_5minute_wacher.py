@@ -61,23 +61,30 @@ columns = ['market', 'candle_date_time_utc', 'candle_date_time_kst', \
       'timestamp', 'candle_acc_trade_price', 'candle_acc_trade_volume', 'unit'\
       ]
 today_date_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+candle_minute = 15 # 분봉 단위
+lower_range_value = 0.01 # 볼린저 밴드 하단 값 깊이 캐치 볼밴 하단보다 1%밑일때 잡는다.
 
 def process_coin(coin):
-  time.sleep(0.08)
+  time.sleep(0.1)
   while True:
-    print(f"{coin}-{datetime.now()}: 코인 탐색 시작")
+    # print(f"{coin}-{datetime.now()}: 코인 탐색 시작")
     try:
       today_date_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-      candle_info = get_minute_candle(coin_name=coin, count=200, minute=5) # 5분봉 데이터 200개
+      candle_info = get_minute_candle(coin_name=coin, count=200, minute=candle_minute) # 5분봉 데이터 200개
+      coin_catch = pd.DataFrame(columns=columns)
       df = pd.DataFrame(candle_info, columns=columns)
       df = df.sort_values(by='candle_date_time_kst', ascending=True)
       
       coin_df = set_bollinger_bands(df, 30, 2) # 데이터 프레임에 볼린저 밴드 값 셋팅
       coin_df = set_rsi(coin_df, 13) # 데이터 프레임에 rsi 값 셋팅
-      today_data = coin_df[coin_df['candle_date_time_kst'].str.startswith(today_date_str)] # 오늘 날짜의 데이터만 선택
+      
+      # today_data = coin_df[coin_df['candle_date_time_kst'].str.startswith(today_date_str)] # 일별 서칭을 할땐 사용함 오늘 날짜의 데이터만 선택
+      today_data = coin_df.loc[0] # 최근데이터만 선택
       
       # 볼린저밴드의 하단 3% 보다 가격이 더떨어지고 rsi가 30이하일때 캐치
-      coin_catch = today_data[(today_data["bol_lower_band"] * 0.03 + today_data["bol_lower_band"] > today_data["low_price"]) & (today_data['rsi'] < 30)]
+      # coin_catch = today_data[(today_data["bol_lower_band"] * lower_range_value + today_data["bol_lower_band"] > today_data["trade_price"]) & (today_data['rsi'] < 30)] # 일별에서만 씀
+      if (today_data["bol_lower_band"] * lower_range_value + today_data["bol_lower_band"] > today_data["trade_price"]) & (today_data['rsi'] < 30):
+        coin_catch = today_data
 
       if not coin_catch.empty and 'market' in coin_catch.columns:
         set_trading_coin_df(coin_catch)
