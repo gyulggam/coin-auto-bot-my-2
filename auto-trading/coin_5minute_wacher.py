@@ -1,13 +1,8 @@
-import uuid
-import requests
-import jwt
-import ta
 # from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures 
 from datetime import datetime
 import time
 from urllib.parse import urlencode
-import hashlib
 import pandas as pd
 from config import config
 from global_variable import set_trading_coin_df
@@ -94,13 +89,8 @@ def process_coin(coin):
 
 def coin_watcher():
   # process coin에서 while 돌게 아니고 여기서 돌아서 스텝을 넘어가게끔 해야할것같아.
-  for step in range(0, len(filter_coin_list), 10):
-    current_coins = filter_coin_list[step:step + 10]
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-      
-      futures = [executor.submit(process_coin, coin) for coin in current_coins]
-      print(current_coins)
-
+      futures = [executor.submit(process_coin, coin) for coin in filter_coin_list]
       # 각 future의 결과를 얻음
       for future in concurrent.futures.as_completed(futures):
         try:
@@ -117,34 +107,4 @@ def coin_watcher():
         finally:
           # 프로그램 종료 전에 정리 작업 수행
           print("프로그램을 종료합니다.")
-# def coin_watcher():
-#   with ThreadPoolExecutor() as executor:
-#     results = []
-#     for coin in filter_coin_list:
-#       # 동적으로 쿼리 수를 조절
-#       start_time = time.time()
-#       while True:
-#         result = executor.submit(process_coin, coin)
-
-#         # 요청 간격이 너무 짧으면 대기
-#         elapsed_time = time.time() - start_time
-#         if elapsed_time < 1 / 2:
-#           time.sleep(1 / 2 - elapsed_time)
-#         else:
-#           break
-
-#   # 결과를 딕셔너리로 변환
-#   try:
-#     for result in results:
-#       print(result)
-#       pass
-#   except Exception as e:
-#     print("코인 탐색 멈춤")
-#     print(f"Error: {e}")
-#   except KeyboardInterrupt:
-#     print("프로그램이 사용자에 의해 중단되었습니다.")
-#     executor.shutdown(wait=False)
-#   finally:
-#     # 프로그램 종료 전에 정리 작업 수행
-#     print("프로그램을 종료합니다.")
 
